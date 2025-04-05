@@ -1,15 +1,8 @@
 const express = require("express");
 const app = express();
-const productsRouter = require("./routes/products.js");
-const categoriesRouter = require("./routes/categories.js");
+const booksRouter = require("./routes/books.js");
 
-app.use((req, res, next) => {
-  console.log(`${req.method} request made to ${req.url}`);
-  next();
-});
-
-app.use("/products", productsRouter);
-app.use("/categories", categoriesRouter);
+app.use("/books", booksRouter);
 
 const PORT = 4000;
 app.listen(PORT, () => {
