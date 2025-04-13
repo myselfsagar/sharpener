@@ -1,12 +1,47 @@
 const mysql = require("mysql2");
 
-//make the connection to db
+//create connection
 const dbConnection = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "password",
-  database: "student_app",
+  database: "bus_booking_system",
 });
+
+//create table
+const createTable = () => {
+  try {
+    dbConnection.execute(`
+      create table IF NOT EXISTS users(
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          name VARCHAR(50),
+          email VARCHAR(50) UNIQUE
+      )`);
+    dbConnection.execute(`
+      create table IF NOT EXISTS buses (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          busNumber VARCHAR(30),
+          totalSeats INT,
+          availableSeats INT
+      )`);
+    dbConnection.execute(`
+      create table IF NOT EXISTS bookings (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          seatNumber INT
+      )`);
+    dbConnection.execute(`
+      create table IF NOT EXISTS payments (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          amountPaid INT,
+          paymentStatus VARCHAR(20)
+      )`);
+
+    console.log("Tables created");
+  } catch (err) {
+    console.log("Error creating table", err);
+    return;
+  }
+};
 
 dbConnection.connect((err) => {
   if (err) {
@@ -15,20 +50,7 @@ dbConnection.connect((err) => {
   }
   console.log("Connected to db");
 
-  const createTableQuery = `CREATE TABLE IF NOT EXISTS students(
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50),
-    email VARCHAR(50) UNIQUE
-  )`;
-  dbConnection.execute(createTableQuery, (err) => {
-    if (err) {
-      console.log("Error creating table", err);
-      dbConnection.end();
-      return;
-    }
-  });
-
-  console.log("Table created");
+  createTable();
 });
 
 module.exports = dbConnection;
