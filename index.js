@@ -1,22 +1,21 @@
 const express = require("express");
 const app = express();
+const dbConnect = require("./utils/db-connection");
+const studentRoutes = require("./routes/studentRoutes");
 
-//connect to db
-const dbConnection = require("./utils/db-connection");
-
-//import all routes
-const userRoutes = require("./routes/userRoutes");
-const busRoutes = require("./routes/busRoutes");
-
-//use middlewares
+//middlewares
 app.use(express.json());
 
-//use all routes
-app.use("/users", userRoutes);
-app.use("/buses", busRoutes);
+//all routes
+app.use("/students", studentRoutes);
 
-//start the server
+//homepage
+app.get("/", (req, res) => {
+  res.send("Welcome to student app");
+});
+
+//Start the server
 const PORT = 4000;
 app.listen(PORT, () => {
-  console.log("Server running on PORT", PORT);
+  console.log(`Server running on PORT ${PORT}`);
 });
