@@ -1,28 +1,22 @@
 const express = require("express");
 const app = express();
-const dbConnect = require("./utils/db-connection");
-const studentRoutes = require("./routes/studentRoutes");
 
-//middlewares
+//connect to db
+const dbConnection = require("./utils/db-connection");
+
+//import all routes
+const userRoutes = require("./routes/userRoutes");
+const busRoutes = require("./routes/busRoutes");
+
+//use middlewares
 app.use(express.json());
 
-//all routes
-app.use("/students", studentRoutes);
+//use all routes
+app.use("/users", userRoutes);
+app.use("/buses", busRoutes);
 
-//homepage
-app.get("/", (req, res) => {
-  res.send("Welcome to student app");
+//start the server
+const PORT = 4000;
+app.listen(PORT, () => {
+  console.log("Server running on PORT", PORT);
 });
-
-dbConnect
-  .sync({ force: true })
-  .then(() => {
-    //Start the server
-    const PORT = 4000;
-    app.listen(PORT, () => {
-      console.log(`Server running on PORT ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.log(err);
-  });
