@@ -14,8 +14,15 @@ app.get("/", (req, res) => {
   res.send("Welcome to student app");
 });
 
-//Start the server
-const PORT = 4000;
-app.listen(PORT, () => {
-  console.log(`Server running on PORT ${PORT}`);
-});
+dbConnect
+  .sync({ force: true })
+  .then(() => {
+    //Start the server
+    const PORT = 4000;
+    app.listen(PORT, () => {
+      console.log(`Server running on PORT ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.log(err);
+  });

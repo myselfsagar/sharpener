@@ -1,57 +1,69 @@
-const dbConnect = require("../utils/db-connection");
+const Student = require("../models/Student");
 
 //add student
-const addStudents = (req, res) => {
-  const { name, email } = req.body;
-  if (!name || !email) {
-    return res.status(400).send("name and email required");
-  }
-
-  const insertQuery = "INSERT INTO students (name, email) VALUES (?, ?)";
-  dbConnect.execute(insertQuery, [name, email], (err) => {
-    if (err) {
-      console.log("Error while inserting value", err);
-      dbConnect.end();
-      return res.status(500).send("Error inserting value", err.message);
+const addStudents = async (req, res) => {
+  try {
+    const { name, email, age } = req.body;
+    if (!name || !email || !age) {
+      return res.status(400).send("name and email and age are required");
     }
-    res.send(`Student with name ${name} added`);
-  });
+
+    const student = await Student.create({
+      name: name,
+      email: email,
+      age: age,
+    });
+
+    res.status(201).send(`Student with name ${name} added`);
+  } catch (err) {
+    console.log("Error while inserting value", err);
+    return res.status(500).send("Error inserting value", err.message);
+  }
 };
 
 //update student
-const updateStudent = (req, res) => {
-  const { id } = req.params;
-  const { name, email } = req.body;
-  const updateQuery = "UPDATE students SET name = ?, email = ? WHERE id = ?";
-  dbConnect.execute(updateQuery, [name, email, id], (err, result) => {
-    if (err) {
-      console.log(err);
-      dbConnect.end();
-      return res.status(500).send("Error while updating", err.message);
-    }
-    if (result.affectedRows === 0) {
-      return res.status(404).send("Student not found!");
+const updateStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, age } = req.body;
+
+    const student = await Student.findByPk(id);
+    if (!student) {
+      res.status(404).send("Student not found!");
     }
 
+    if (name) student.name = name;
+    if (email) student.email = email;
+    if (age) student.age = age;
+    await student.save();
+
     res.send(`Student with id ${id} successfully updated`);
-  });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send("Error while updating", err.message);
+  }
 };
 
 //delete student
-const deleteStudent = (req, res) => {
-  const { id } = req.params;
-  const deleteQuery = "DELETE FROM students where id = ?";
-  dbConnect.execute(deleteQuery, [id], (err, result) => {
-    if (err) {
-      console.log("Error while deleting", err);
-      dbConnect.end();
-      return res.status(500).send("Error while deleting student", err.message);
-    }
-    if (result.affectedRows === 0) {
+const deleteStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const student = await Student.destroy({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!student) {
       return res.status(404).send("Student not found!");
     }
+
     res.send(`Student with id ${id} successfully deleted`);
-  });
+  } catch (err) {
+    console.log("Error while deleting", err);
+    return res.status(500).send("Error while deleting student", err.message);
+  }
 };
 
 module.exports = {
