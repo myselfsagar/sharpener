@@ -5,14 +5,12 @@ const app = express();
 const dbConnection = require("./utils/db-connection");
 
 //models
-const UserModel = require("./models/User");
-const BusModel = require("./models/Bus");
-const BookingModel = require("./models/Booking");
-const PaymentModel = require("./models/Payment");
+require("./models");
 
 //import all routes
 const userRoutes = require("./routes/userRoutes");
 const busRoutes = require("./routes/busRoutes");
+const bookingRoutes = require("./routes/bookingRoutes");
 
 //use middlewares
 app.use(express.json());
@@ -20,6 +18,7 @@ app.use(express.json());
 //use all routes
 app.use("/users", userRoutes);
 app.use("/buses", busRoutes);
+app.use("/bookings", bookingRoutes);
 
 dbConnection
   .sync({ alter: true })

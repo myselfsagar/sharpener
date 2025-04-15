@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const { Booking, Bus } = require("../models");
 
 const addUser = async (req, res) => {
   try {
@@ -31,7 +32,25 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+const getUserBookings = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const userBookings = await Booking.findAll({
+      where: { userId },
+      include: Bus,
+      // include: [{ model: Bus }],
+    });
+    res.json(userBookings);
+  } catch (err) {
+    console.log("Error fetching user bookings", err);
+    return res
+      .status(500)
+      .json({ Error: `Error fetching bookings ${err.message}` });
+  }
+};
+
 module.exports = {
   addUser,
   getAllUsers,
+  getUserBookings,
 };
